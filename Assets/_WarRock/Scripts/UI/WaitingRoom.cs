@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ExitGames.Client.Photon;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,38 +13,42 @@ public class WaitingRoom : LobbyPanel
     [SerializeField] private Button _readyButton;
     [SerializeField] private Button _startButton;
     [SerializeField] private Button _backButton;
-    [SerializeField] private Text _tokenLabel;
+    [SerializeField] private Text _roomIdLabel;
 
     Dictionary<int, PlayerSlot> _slots = new Dictionary<int, PlayerSlot>();
     #endregion
 
     #region Methods
-    private void Awake()
-    {
-        _readyButton.onClick.AddListener(OnClickedReady);
-        _startButton.onClick.AddListener(OnClickedStart);
-        _backButton.onClick.AddListener(OnClickedBack);
-    }
-
-    /// <summary>
-    /// Disconnects the client from the room before switching back to the Main Menu UI Panel.
-    /// </summary>
-    private void OnClickedBack() { PhotonNetwork.LeaveRoom(); OpenUIPanel(UIPanelTypes.MainMenu); }
-
-    /// <summary>
-    /// Upon done joining/creating, this script enables. Thus running this method which sets up the ui and required player properties.
-    /// </summary>
+ 
     private void OnEnable()
     {
+        // Event Listeners
+        _readyButton.onClick.AddListener(OnClickedReady);
+        _startButton.onClick.AddListener(OnClickedStart);
+        _backButton.onClick.AddListener(OnClickedExit);
+
+        // Update UI
         CleanUpList();
         SetClientUI();
         UpdateUI();
 
         if (PhotonNetwork.room != null)
         {
-            _tokenLabel.text = PhotonNetwork.room.CustomProperties[RoomProperties.TOKEN].ToString();
+            _roomIdLabel.text = PhotonNetwork.room.CustomProperties[RoomProperties.ID].ToString();
         }
     }
+    private void OnDisable() {
+        // Event Listeners
+        _readyButton.onClick.RemoveListener(OnClickedReady);
+        _startButton.onClick.RemoveListener(OnClickedStart);
+        _backButton.onClick.RemoveListener(OnClickedExit);
+    }
+
+    /// <summary>
+    /// Disconnects the client from the room before switching back to the Main Menu UI Panel.
+    /// </summary>
+    private void OnClickedExit() { PhotonNetwork.LeaveRoom(); OpenUIPanel(UIPanelTypes.MainMenu); }
+
 
     /// <summary>
     /// Changes the Ready button into a Start button if to the player is a master and the other way around.
@@ -67,15 +72,11 @@ public class WaitingRoom : LobbyPanel
     /// </summary>
     private void OnClickedReady()
     {
-        bool currentReadyState = (bool)PhotonNetwork.player.CustomProperties[PlayerProperties.READY_STATE];
-        bool newReadyState = !currentReadyState;
+        Hashtable newProperties = new Hashtable();
+        newProperties[PlayerProperties.READY_STATE] = !(bool)PhotonNetwork.player.CustomProperties[PlayerProperties.READY_STATE];
 
-        ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable
-        {
-            { PlayerProperties.READY_STATE, newReadyState }
-        };
+        PhotonNetwork.player.SetCustomProperties(newProperties);
 
-        PhotonNetwork.player.SetCustomProperties(propertiesToSet);
         _slots[PhotonNetwork.player.ID].RefreshData(PhotonNetwork.player);
     }
 
@@ -84,12 +85,31 @@ public class WaitingRoom : LobbyPanel
     /// </summary>
     private void OnClickedStart()
     {
-        if (PhotonNetwork.room.PlayerCount < PhotonNetwork.room.MaxPlayers)
+        if (PhotonNetwork.room.PlayerCount < PhotonNetwork.room.MaxPlayers) // Todo: add Minimum start amount
         {
             Debug.Log("You need 4 players in order to start! [" + PhotonNetwork.room.PlayerCount + "/" + PhotonNetwork.room.MaxPlayers+ "]");
             return;
         }
+        else if (!AllPlayersReady())
+        {
+            Debug.Log("Not all players are ready!");
+            return;
+        }
 
+        Debug.Log("Starting game...");
+
+        // Loading level, reset player ready states so we can use them to check if player is done loading
+        foreach (PhotonPlayer player in PhotonNetwork.playerList)
+        {
+            Hashtable newProperties = new Hashtable();
+            newProperties[PlayerProperties.LOADING_MAP] = true;
+            player.SetCustomProperties(newProperties);
+        }
+
+        PhotonNetwork.LoadLevel("Map_01"); // Todo: replace with list of different maps (scenes) and consts
+    }
+
+    private bool AllPlayersReady() {
         foreach (PhotonPlayer player in PhotonNetwork.playerList)
         {
             // If player is host, skip
@@ -98,21 +118,9 @@ public class WaitingRoom : LobbyPanel
 
             // If one of the players is not ready
             if (!(bool)player.CustomProperties[PlayerProperties.READY_STATE])
-            {
-                Debug.Log("Not all players are ready!");
-                return;
-            }
+                return false;
         }
-
-        Debug.Log("Starting game...");
-
-        // Loading level, reset player ready states so we can use them to check if player is done loading
-        foreach (PhotonPlayer player in PhotonNetwork.playerList)
-        {
-            player.CustomProperties[PlayerProperties.READY_STATE] = false;
-        }
-
-        PhotonNetwork.LoadLevel("Map_01"); // Todo: replace with list of different maps (scenes) and consts
+        return true;
     }
 
     /// <summary>

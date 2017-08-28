@@ -53,7 +53,7 @@ public class PlayerSlot : MonoBehaviour
         }
 
         // Update Kick Button
-        if (_player.IsMasterClient) // If player of this playerSlot is room master
+        if (player.IsMasterClient) // If player of this playerSlot is room master
         {
             _kickButton.gameObject.SetActive(false);
         }
@@ -80,8 +80,10 @@ public class PlayerSlot : MonoBehaviour
             _readyState.text = "";
         }
 
-        
-            _imgComp.sprite = PlayerManager.Instance.GetLvlImg();
+        // Todo : fix null error!
+        Debug.Log("Lvl: " + player.CustomProperties[PlayerProperties.LVL]);
+        byte  lvl = (byte)player.CustomProperties[PlayerProperties.LVL];
+        _imgComp.sprite = PlayerManager.Instance.GetImgForLvl(lvl);
     }
     #endregion
 

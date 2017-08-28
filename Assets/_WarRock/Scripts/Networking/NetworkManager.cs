@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ExitGames.Client.Photon;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -22,34 +23,57 @@ public class NetworkManager : Photon.PunBehaviour
 
     #region Methods
     /// <summary>
-    /// Creates a room in the photon network with the given roomtype (private/public). 
-    /// Also generates a room specific token that is used by other players to join your room.
+    /// Creates a room in the photon network with the given room parameters. 
+    /// Also sets the lobby room properties.
     /// </summary>
-    public void CreateRoom(RoomTypes roomType)
+    internal void CreateRoom(string roomName, bool isPrivate, int roomSlots, bool isInvisible)
     {
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.CustomRoomProperties = new ExitGames.Client.Photon.Hashtable();
-        roomOptions.CustomRoomProperties.Add(RoomProperties.TOKEN, GenerateRoomToken());
-        roomOptions.CustomRoomProperties.Add(RoomProperties.ROOM_TYTPE, (int)roomType);
-        roomOptions.CustomRoomPropertiesForLobby = new string[]{RoomProperties.TOKEN, RoomProperties.ROOM_TYTPE};
-        roomOptions.MaxPlayers = 4;
-        PhotonNetwork.CreateRoom("", roomOptions, TypedLobby.Default);
+        // Create and set Room Options
+        RoomOptions roomOptions = new RoomOptions() {
+            CustomRoomProperties = new Hashtable {
+                { RoomProperties.ID, GenerateRoomId() },
+                { RoomProperties.ROOM_TYPE, isPrivate },
+                { RoomProperties.GAME_MODE, 0 },
+                { RoomProperties.MAP_ID, 0 }
+            },
+            CustomRoomPropertiesForLobby = new string[] {
+                RoomProperties.ID,
+                RoomProperties.ROOM_TYPE,
+                RoomProperties.GAME_MODE,
+                RoomProperties.MAP_ID
+            },
+            MaxPlayers = (byte)roomSlots,
+            PublishUserId = false, // Enable for Find Friend feature
+            CleanupCacheOnLeave = true,
+            IsOpen = !isPrivate,
+            IsVisible = !isInvisible
+        };
+        // Create a room using the custom Room Options
+        PhotonNetwork.CreateRoom(roomName, roomOptions, TypedLobby.Default);
     }
 
     /// <summary>
     /// Connects the user to the room that matched the given token. If no room is found, nothing will happen.
     /// </summary>
-    public bool JoinRoomWithToken(int token)
+    internal bool JoinRoomWithId(int roomId)
     {
         RoomInfo room = null;
 
-        // Find room that matches given token
+        // Find room that matches given id
         foreach (RoomInfo roomInfo in PhotonNetwork.GetRoomList())
         {
-            if ((int)roomInfo.CustomProperties["TO"] == token && roomInfo.IsOpen)
+            if ((int)roomInfo.CustomProperties[RoomProperties.ID] == roomId)
             {
-                room = roomInfo;
-                Debug.Log("Room token match found!");
+                Debug.Log("Found room with ID [" + roomId + "]...");
+                if (roomInfo.IsOpen)
+                {
+                    room = roomInfo;
+                    Debug.Log("Room is public, joining!");
+                }
+                else
+                {
+                    Debug.Log("Cannot join room. Room is private!");
+                }
             }
         }
 
@@ -58,20 +82,20 @@ public class NetworkManager : Photon.PunBehaviour
         {
             if (JoinRoom(room.Name))
             {
-                Debug.Log("Successfully connected to room with token [" + token + "].");
+                Debug.Log("Successfully connected to room with id [" + roomId + "].");
                 return true;
             }
             else
             {
-                Debug.Log("Failed to connect to room with token [" + token + "]...");
+                Debug.Log("Failed to connect to room with id [" + roomId + "]...");
                 // Todo: Give player feedback of connection failure
                 return false;
             }
         }
         else
         {
-            Debug.Log("Invalid token [" + token + "]...");
-            // Todo: Give player feedback of invalid token
+            Debug.Log("Invalid room id [" + roomId + "]...");
+            // Todo: Give player feedback of invalid id
             return false;
         }
     }
@@ -86,7 +110,7 @@ public class NetworkManager : Photon.PunBehaviour
         // Add all public rooms to the list
         foreach (RoomInfo room in PhotonNetwork.GetRoomList())
         {
-            if ((int)room.CustomProperties["TY"] == 0 && room.IsOpen)
+            if (room.IsOpen)
             {
                 publicRooms.Add(room);
             }
@@ -95,14 +119,15 @@ public class NetworkManager : Photon.PunBehaviour
         // Select a random room from the list and attempt connection
         if (publicRooms.Count > 0)
         {
-            if (JoinRoom(publicRooms[Random.Range(0, publicRooms.Count)].Name))
+            // Todo: randomize between the 5 lowest ping rooms only
+            if (JoinRoom(publicRooms[Random.Range(0, publicRooms.Count)].Name )) 
             {
                 Debug.Log("Successfully connected to random public room.");
                 return true;
             }
             else
             {
-                Debug.Log("Failed to connect to public room...");
+                Debug.Log("Failed to connect to random public room...");
                 // Todo: Give player feedback of connection failure
                 return false;
             }
@@ -126,46 +151,39 @@ public class NetworkManager : Photon.PunBehaviour
     /// <summary>
     /// Prepares the custom properties with the default values so that they are not null.
     /// </summary>
-    internal void SetDefaultPlayerProperties(bool ofAllPlayersInRoom)
+    internal void ResetPlayerRoomPrefs(bool resetAllUsersInRoom)
     {
-        ExitGames.Client.Photon.Hashtable propertiesToSet = new ExitGames.Client.Photon.Hashtable
-        {
-            { PlayerProperties.READY_STATE, false },
-            { PlayerProperties.ROLE, PlayerRoles.None }
-        };
+        Hashtable curProperties = new Hashtable();
+        curProperties[PlayerProperties.READY_STATE] = false;
 
-        if (ofAllPlayersInRoom)
+        if (resetAllUsersInRoom)
         {
             foreach (PhotonPlayer player in PhotonNetwork.playerList)
             {
-                player.SetCustomProperties(propertiesToSet);
+                player.SetCustomProperties(curProperties);
             }
         }
         else
         {
-            PhotonNetwork.player.SetCustomProperties(propertiesToSet);
+            PhotonNetwork.player.SetCustomProperties(curProperties);
         }
     }
 
     /// <summary>
-    /// Generates and returns a token that exists of 5 numbers. 
-    /// Excludes tokens that are already in use by the server.
+    /// Generates and returns a room ID. 
+    /// Excludes room IDs that are already in use by the server.
     /// </summary>
-    public int GenerateRoomToken()
+    public int GenerateRoomId()
     {
-        HashSet<int> exclude = new HashSet<int>() { };
-        
-        foreach (RoomInfo roomInfo in PhotonNetwork.GetRoomList())
+        HashSet<int> exclusionList = new HashSet<int>() { };
+        RoomInfo[] roomList = PhotonNetwork.GetRoomList();
+
+        foreach (RoomInfo roomInfo in roomList)
         {
-            exclude.Add((int)roomInfo.CustomProperties[RoomProperties.TOKEN]);
+            exclusionList.Add((int)roomInfo.CustomProperties[RoomProperties.ID]);
         }
-
-        IEnumerable<int> range = Enumerable.Range(0, 99999).Where(i => !exclude.Contains(i));
-        System.Random rand = new System.Random();
-
-        int index = rand.Next(10000, 99999 - exclude.Count);
-
-        return range.ElementAt(index);
+        
+        return Enumerable.Range(0, 1000).Where(i => !exclusionList.Contains(i)).ElementAt(0);
     }
 
     /// <summary>
@@ -215,7 +233,7 @@ public class NetworkManager : Photon.PunBehaviour
     {
         base.OnJoinedLobby();
         Debug.Log("Lobby joined");
-        SetDefaultPlayerProperties(false);
+        ResetPlayerRoomPrefs(false);
     }
 
     public override void OnJoinedRoom()

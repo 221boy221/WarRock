@@ -51,7 +51,7 @@ public class JoinMenu : LobbyPanel
             return;
         }
 
-        NetworkManager.Instance.JoinRoomWithToken(_token);
+        NetworkManager.Instance.JoinRoomWithId(_token);
     }
 
     /// <summary>

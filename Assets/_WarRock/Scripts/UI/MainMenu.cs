@@ -72,7 +72,7 @@ public class MainMenu : LobbyPanel
         if (_token <= 0)
             return;
 
-        NetworkManager.Instance.JoinRoomWithToken(_token);
+        NetworkManager.Instance.JoinRoomWithId(_token);
     }
 
     /// <summary>

@@ -9,49 +9,32 @@ public class LobbyManager : MonoBehaviour
     #endregion
     
     #region Methods
-    private void Awake()
-    {
-        // Entry
-        AddEventListeners();
-    }
 
     private void OnEnable()
     {
+        for (int i = 0; i < _LobbyPanels.Length; i++)
+            _LobbyPanels[i].OpenUIPanelEvent += SwitchPanelTo;
+
         // Check if the Player is already connected to a Room.
         if (!PhotonNetwork.inRoom)
-        {
             SwitchPanelTo(UIPanelTypes.MainMenu);
-        }
         else
-        {
             ReconnectWithWaitingRoom();
-        }
     }
+
+    private void OnDisable() {
+        for (int i = 0; i < _LobbyPanels.Length; i++)
+            _LobbyPanels[i].OpenUIPanelEvent -= SwitchPanelTo;
+    }
+
 
     /// <summary>
     /// Switches the UI Panel back towards the Waiting Room since the client is already connected, thus skipping the Join/Host panel.
     /// </summary>
     private void ReconnectWithWaitingRoom()
     {
-        NetworkManager.Instance.SetDefaultPlayerProperties(false); // Todo: check if necessary
+        NetworkManager.Instance.ResetPlayerRoomPrefs(false); // Todo: check if necessary
         SwitchPanelTo(UIPanelTypes.WaitingRoom);
-    }
-
-    // Event Listeners //
-    private void AddEventListeners()
-    {
-        for (int i = 0; i < _LobbyPanels.Length; i++)
-        {
-            _LobbyPanels[i].OpenUIPanelEvent += SwitchPanelTo;
-        }
-    }
-
-    private void RemoveEventListeners()
-    {
-        for (int i = 0; i < _LobbyPanels.Length; i++)
-        {
-            _LobbyPanels[i].OpenUIPanelEvent -= SwitchPanelTo;
-        }
     }
 
     /// <summary>
@@ -82,6 +65,13 @@ public class LobbyManager : MonoBehaviour
                 }
             }   
         }
+    }
+
+    /// <summary>
+    /// Photon Callback that gets fired once the client successfully joins his newly created room. Once received, we open the Waiting Room UI panel.
+    /// </summary>
+    public void OnJoinedRoom() {
+        SwitchPanelTo(UIPanelTypes.WaitingRoom);
     }
     #endregion
 
