@@ -1,6 +1,4 @@
-﻿using ExitGames.Client.Photon;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class HostMenu : LobbyPanel

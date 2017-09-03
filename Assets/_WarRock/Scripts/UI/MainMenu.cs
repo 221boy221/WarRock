@@ -5,26 +5,26 @@ public class MainMenu : LobbyPanel
 {
 
     #region Vars
-    [SerializeField] private Button _settingsButton;
-    [SerializeField] private InputField _inputField;
-    [SerializeField] private Button _joinTokenButton;
-    [SerializeField] private Button _joinRandomButton;
-    [SerializeField] private Button _hostButton;
-    [SerializeField] private SettingsMenu _settingsPanel;
-    [SerializeField] private Button _backButton;
-    private int _token = 0;
+    [SerializeField] private InputField m_InputField;
+    [SerializeField] private Button m_SettingsButton; // Maybe have this in some Lobby.cs
+    [SerializeField] private Button m_JoinRoomIdButton;
+    [SerializeField] private Button m_JoinRandomButton;
+    [SerializeField] private Button m_HostRoomButton;
+    [SerializeField] private SettingsMenu m_SettingsPanel;
+    [SerializeField] private Button m_ExitButton;
+    private int m_RoomId = 0;
     #endregion
 
     #region Methods
     private void Awake()
     {
-        _inputField.onEndEdit.AddListener(OnEndEdit);
-        _joinTokenButton.onClick.AddListener(OnClickedJoinWithToken);
-        _joinRandomButton.onClick.AddListener(OnClickedJoinRandomRoom);
-        _hostButton.onClick.AddListener(OnClickedHost);
+        m_InputField.onEndEdit.AddListener(OnEndEdit);
+        m_JoinRoomIdButton.onClick.AddListener(OnClickedJoinWithToken);
+        m_JoinRandomButton.onClick.AddListener(OnClickedJoinRandomRoom);
+        m_HostRoomButton.onClick.AddListener(OnClickedHost);
 
-        _settingsButton.onClick.AddListener(OnClickedSettings);
-        _backButton.onClick.AddListener(OnClickedBack);
+        m_SettingsButton.onClick.AddListener(OnClickedSettings);
+        m_ExitButton.onClick.AddListener(OnClickedBack);
     }
 
     // Button listeners
@@ -43,7 +43,7 @@ public class MainMenu : LobbyPanel
         if (PhotonNetwork.player.NickName == "")
         {
             Debug.Log("Player nickname is: " + PhotonNetwork.player.NickName);
-            _settingsPanel.panelToOpen = clickedPanel;
+            m_SettingsPanel.panelToOpen = clickedPanel;
             OpenUIPanel(UIPanelTypes.SettingsMenu);
         }
         else
@@ -58,10 +58,10 @@ public class MainMenu : LobbyPanel
     /// <param name="inputString"></param>
     private void OnEndEdit(string inputString) {
         // Check if token is Int only
-        bool isValidToken = int.TryParse(inputString, out _token);
+        bool isValidToken = int.TryParse(inputString, out m_RoomId);
 
         if (!isValidToken) {
-            _token = -1;
+            m_RoomId = -1;
         }
     }
 
@@ -69,10 +69,10 @@ public class MainMenu : LobbyPanel
     /// Checks if the token value type is valid and calls the NetworkManager.JoinRoomWithToken().
     /// </summary>
     private void OnClickedJoinWithToken() {
-        if (_token <= 0)
+        if (m_RoomId <= 0)
             return;
 
-        NetworkManager.Instance.JoinRoomWithId(_token);
+        NetworkManager.Instance.JoinRoomWithId(m_RoomId);
     }
 
     /// <summary>

@@ -8,14 +8,14 @@ public class WaitingRoom : LobbyPanel
 {
 
     #region Vars
-    [SerializeField] private GameObject _playerSlotPrefab;
-    [SerializeField] private RectTransform _playerSlotHolder;
-    [SerializeField] private Button _readyButton;
-    [SerializeField] private Button _startButton;
-    [SerializeField] private Button _backButton;
-    [SerializeField] private Text _roomIdLabel;
+    [SerializeField] private GameObject m_PlayerSlotPrefab;
+    [SerializeField] private RectTransform m_PlayerSlotHolder;
+    [SerializeField] private Button m_ReadyButton;
+    [SerializeField] private Button m_StartButton;
+    [SerializeField] private Button m_LeaveButton;
+    [SerializeField] private Text m_RoomIdLabel;
 
-    Dictionary<int, PlayerSlot> _slots = new Dictionary<int, PlayerSlot>();
+    private Dictionary<int, PlayerSlot> m_Slots = new Dictionary<int, PlayerSlot>();
     #endregion
 
     #region Methods
@@ -23,9 +23,9 @@ public class WaitingRoom : LobbyPanel
     private void OnEnable()
     {
         // Event Listeners
-        _readyButton.onClick.AddListener(OnClickedReady);
-        _startButton.onClick.AddListener(OnClickedStart);
-        _backButton.onClick.AddListener(OnClickedExit);
+        m_ReadyButton.onClick.AddListener(OnClickedReady);
+        m_StartButton.onClick.AddListener(OnClickedStart);
+        m_LeaveButton.onClick.AddListener(OnClickedExit);
 
         // Update UI
         CleanUpList();
@@ -34,14 +34,14 @@ public class WaitingRoom : LobbyPanel
 
         if (PhotonNetwork.room != null)
         {
-            _roomIdLabel.text = PhotonNetwork.room.CustomProperties[RoomProperties.ID].ToString();
+            m_RoomIdLabel.text = PhotonNetwork.room.CustomProperties[RoomProperties.ID].ToString();
         }
     }
     private void OnDisable() {
         // Event Listeners
-        _readyButton.onClick.RemoveListener(OnClickedReady);
-        _startButton.onClick.RemoveListener(OnClickedStart);
-        _backButton.onClick.RemoveListener(OnClickedExit);
+        m_ReadyButton.onClick.RemoveListener(OnClickedReady);
+        m_StartButton.onClick.RemoveListener(OnClickedStart);
+        m_LeaveButton.onClick.RemoveListener(OnClickedExit);
     }
 
     /// <summary>
@@ -57,13 +57,13 @@ public class WaitingRoom : LobbyPanel
     {
         if (PhotonNetwork.player.IsMasterClient)
         {
-            _startButton.gameObject.SetActive(true);
-            _readyButton.gameObject.SetActive(false);
+            m_StartButton.gameObject.SetActive(true);
+            m_ReadyButton.gameObject.SetActive(false);
         }
         else
         {
-            _startButton.gameObject.SetActive(false);
-            _readyButton.gameObject.SetActive(true);
+            m_StartButton.gameObject.SetActive(false);
+            m_ReadyButton.gameObject.SetActive(true);
         }
     }
 
@@ -77,7 +77,7 @@ public class WaitingRoom : LobbyPanel
 
         PhotonNetwork.player.SetCustomProperties(newProperties);
 
-        _slots[PhotonNetwork.player.ID].RefreshData(PhotonNetwork.player);
+        m_Slots[PhotonNetwork.player.ID].RefreshData(PhotonNetwork.player);
     }
 
     /// <summary>
@@ -134,10 +134,10 @@ public class WaitingRoom : LobbyPanel
         foreach (PhotonPlayer player in PhotonNetwork.playerList)
         {   
             // Update existing slot
-            if (_slots.ContainsKey(player.ID))
+            if (m_Slots.ContainsKey(player.ID))
             {
                 // Found ID, refresh data
-                _slots[player.ID].RefreshData(player);
+                m_Slots[player.ID].RefreshData(player);
 
                 // Add ID to processed IDs list
                 processedIDs.Add(player.ID);
@@ -148,7 +148,7 @@ public class WaitingRoom : LobbyPanel
             else
             {
                 // Instantiate prefab and set data
-                GameObject slot = Instantiate(_playerSlotPrefab, _playerSlotHolder);
+                GameObject slot = Instantiate(m_PlayerSlotPrefab, m_PlayerSlotHolder);
                 slot.transform.localScale = Vector3.one;
                 slot.transform.localPosition = new Vector3(slot.transform.localPosition.x, slot.transform.localPosition.y, 0);
 
@@ -156,7 +156,7 @@ public class WaitingRoom : LobbyPanel
                 playerSlot.RefreshData(player);
 
                 // Add to dictionary
-                _slots.Add(player.ID, playerSlot);
+                m_Slots.Add(player.ID, playerSlot);
 
                 // Add ID to processed IDs list
                 processedIDs.Add(player.ID);
@@ -166,11 +166,11 @@ public class WaitingRoom : LobbyPanel
         }
 
         // Remove playerslots of players that are no longer connected to the room
-        foreach (var slot in _slots.Reverse())
+        foreach (var slot in m_Slots.Reverse())
         {
             if (!processedIDs.Contains(slot.Key))
             {
-                _slots.Remove(slot.Key);
+                m_Slots.Remove(slot.Key);
                 Destroy(slot.Value.gameObject);
             }
         }
@@ -181,8 +181,8 @@ public class WaitingRoom : LobbyPanel
     /// </summary>
     public void CleanUpList()
     {
-        _slots = new Dictionary<int, PlayerSlot>();
-        foreach (RectTransform child in _playerSlotHolder)
+        m_Slots = new Dictionary<int, PlayerSlot>();
+        foreach (RectTransform child in m_PlayerSlotHolder)
         {
             Destroy(child.gameObject);
         }
