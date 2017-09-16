@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class HostMenu : LobbyPanel
+public class CreateRoomUi : UiPanel
 {
 
     #region Vars
@@ -12,7 +12,7 @@ public class HostMenu : LobbyPanel
     [SerializeField] private Slider m_SlotSlider;
     [SerializeField] private InputField m_RoomNameInputFd;
 
-    // Data
+    // Default Data
     private string m_RoomName = "Go, Go, Go!";
     private int m_PlayerSlots = 2;
     private bool m_IsPrivate = false;
@@ -50,7 +50,7 @@ public class HostMenu : LobbyPanel
     /// <summary>
     /// Opens the UI panel MainMenu.
     /// </summary>
-    private void OnClickedCancel() { OpenUIPanel(UIPanelTypes.MainMenu); }
+    private void OnClickedCancel() { OpenUIPanel(UIPanelTypes.RoomListMenu); }
 
     /// <summary>
     /// Calls the NetworkManager.CreateRoom() with either RoomType.Public or RoomType.Private

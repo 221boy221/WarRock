@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-public class LobbyPanel : MonoBehaviour
+public class UiPanel : MonoBehaviour
 {
     #region Vars
     internal event UnityAction<UIPanelTypes> OpenUIPanelEvent = delegate { };

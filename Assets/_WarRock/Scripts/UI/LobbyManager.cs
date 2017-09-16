@@ -5,7 +5,7 @@ public class LobbyManager : MonoBehaviour
 {
 
     #region Vars
-    [SerializeField] private LobbyPanel[] _LobbyPanels;
+    [SerializeField] private UiPanel[] _LobbyPanels;
     #endregion
     
     #region Methods
@@ -17,7 +17,7 @@ public class LobbyManager : MonoBehaviour
 
         // Check if the Player is already connected to a Room.
         if (!PhotonNetwork.inRoom)
-            SwitchPanelTo(UIPanelTypes.MainMenu);
+            SwitchPanelTo(UIPanelTypes.RoomListMenu);
         else
             ReconnectWithWaitingRoom();
     }
@@ -34,7 +34,7 @@ public class LobbyManager : MonoBehaviour
     private void ReconnectWithWaitingRoom()
     {
         NetworkManager.Instance.ResetPlayerRoomPrefs(false); // Todo: check if necessary
-        SwitchPanelTo(UIPanelTypes.WaitingRoom);
+        SwitchPanelTo(UIPanelTypes.WaitingRoomMenu);
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class LobbyManager : MonoBehaviour
     private void SwitchPanelTo(UIPanelTypes panelType) 
     {
         // Todo: Improve this, maybe replace uipaneltypes with the actual type
-        LobbyPanel panel = null;
+        UiPanel panel = null;
         for (int i = 0; i < _LobbyPanels.Length; i++)
         {
             if (_LobbyPanels[i].panelType == panelType)
@@ -59,7 +59,7 @@ public class LobbyManager : MonoBehaviour
         {
             for (int i = 0; i < _LobbyPanels.Length; i++)
             {
-                if (_LobbyPanels[i].panelType != panelType)
+                if (_LobbyPanels[i].panelType != panelType && _LobbyPanels[i].panelType != UIPanelTypes.None)
                 {
                     _LobbyPanels[i].gameObject.SetActive(false);
                 }
@@ -71,7 +71,7 @@ public class LobbyManager : MonoBehaviour
     /// Photon Callback that gets fired once the client successfully joins his newly created room. Once received, we open the Waiting Room UI panel.
     /// </summary>
     public void OnJoinedRoom() {
-        SwitchPanelTo(UIPanelTypes.WaitingRoom);
+        SwitchPanelTo(UIPanelTypes.WaitingRoomMenu);
     }
     #endregion
 

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WaitingRoom : LobbyPanel
+public class WaitingRoom : UiPanel
 {
 
     #region Vars
@@ -32,8 +32,7 @@ public class WaitingRoom : LobbyPanel
         SetClientUI();
         UpdateUI();
 
-        if (PhotonNetwork.room != null)
-        {
+        if (PhotonNetwork.room != null) {
             m_RoomIdLabel.text = PhotonNetwork.room.CustomProperties[RoomProperties.ID].ToString();
         }
     }
@@ -47,7 +46,10 @@ public class WaitingRoom : LobbyPanel
     /// <summary>
     /// Disconnects the client from the room before switching back to the Main Menu UI Panel.
     /// </summary>
-    private void OnClickedExit() { PhotonNetwork.LeaveRoom(); OpenUIPanel(UIPanelTypes.MainMenu); }
+    private void OnClickedExit() {
+        PhotonNetwork.LeaveRoom();
+        OpenUIPanel(UIPanelTypes.RoomListMenu);
+    }
 
 
     /// <summary>
@@ -204,7 +206,7 @@ public class WaitingRoom : LobbyPanel
 
         // - 
         CleanUpList();
-        OpenUIPanel(UIPanelTypes.MainMenu);
+        OpenUIPanel(UIPanelTypes.RoomListMenu);
     }
 
     public void OnPhotonPlayerConnected(PhotonPlayer player)
