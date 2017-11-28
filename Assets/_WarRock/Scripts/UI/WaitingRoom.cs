@@ -87,17 +87,28 @@ public class WaitingRoom : UiPanel
     /// </summary>
     private void OnClickedStart()
     {
-        if (PhotonNetwork.room.PlayerCount < PhotonNetwork.room.MaxPlayers) // Todo: add Minimum start amount
+        if (PhotonNetwork.room.PlayerCount > RoomProperties.MIN_SLOTS)
         {
-            Debug.Log("You need 4 players in order to start! [" + PhotonNetwork.room.PlayerCount + "/" + PhotonNetwork.room.MaxPlayers+ "]");
+            // Min slot count reached
+            if (AllPlayersReady())
+            {
+                // All players rdy
+                StartGame();
+            }
+            else
+            {
+                Debug.Log("Not all players are ready!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.Log("You need at least " + RoomProperties.MIN_SLOTS + " players in order to start!");
             return;
         }
-        else if (!AllPlayersReady())
-        {
-            Debug.Log("Not all players are ready!");
-            return;
-        }
+    }
 
+    private void StartGame() {
         Debug.Log("Starting game...");
 
         // Loading level, reset player ready states so we can use them to check if player is done loading
@@ -108,7 +119,7 @@ public class WaitingRoom : UiPanel
             player.SetCustomProperties(newProperties);
         }
 
-        PhotonNetwork.LoadLevel("Map_01"); // Todo: replace with list of different maps (scenes) and consts
+        PhotonNetwork.LoadLevel((int)PhotonNetwork.room.CustomProperties[RoomProperties.MAP_ID]); // Todo: replace with list of different maps (scenes) and consts
     }
 
     private bool AllPlayersReady() {

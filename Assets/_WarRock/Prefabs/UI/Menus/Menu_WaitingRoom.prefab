@@ -634,7 +634,7 @@ MonoBehaviour:
   m_ReadyButton: {fileID: 114599735258666910}
   m_StartButton: {fileID: 114759055595494378}
   m_LeaveButton: {fileID: 114563736309373266}
-  m_RoomIdLabel: {fileID: 114916370712573186}
+  m_RoomIdLabel: {fileID: 114774763506377032}
 --- !u!114 &114702577065281458
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -741,7 +741,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 32445
+  m_Text: 99999
 --- !u!114 &114798458582203494
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -899,7 +899,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 224455320640673054}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
@@ -955,8 +955,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 224993729675817116}
   - {fileID: 224316746696403650}
+  - {fileID: 224993729675817116}
   m_Father: {fileID: 224614500198416302}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1127,7 +1127,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 224455320640673054}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}

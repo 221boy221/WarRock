@@ -530,11 +530,6 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 119}
     m_Modifications:
-    - target: {fileID: 114950196322987938, guid: 16b138a781b434b478c86c9600358e80,
-        type: 2}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 224868870927692802, guid: 16b138a781b434b478c86c9600358e80,
         type: 2}
       propertyPath: m_LocalPosition.x
@@ -625,50 +620,6 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 224152737774524628, guid: 16b138a781b434b478c86c9600358e80,
-        type: 2}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224254869592408972, guid: 16b138a781b434b478c86c9600358e80,
-        type: 2}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114883478418997078, guid: 16b138a781b434b478c86c9600358e80,
-        type: 2}
-      propertyPath: panelType
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1138187294337062, guid: 16b138a781b434b478c86c9600358e80, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114950196322987938, guid: 16b138a781b434b478c86c9600358e80,
-        type: 2}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114950196322987938, guid: 16b138a781b434b478c86c9600358e80,
-        type: 2}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114950196322987938, guid: 16b138a781b434b478c86c9600358e80,
-        type: 2}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 455282601}
-    - target: {fileID: 114950196322987938, guid: 16b138a781b434b478c86c9600358e80,
-        type: 2}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: set_lineSpacing
-      objectReference: {fileID: 0}
-    - target: {fileID: 114950196322987938, guid: 16b138a781b434b478c86c9600358e80,
-        type: 2}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 16b138a781b434b478c86c9600358e80, type: 2}
   m_IsPrefabParent: 0
@@ -683,12 +634,6 @@ MonoBehaviour:
     type: 2}
   m_PrefabInternal: {fileID: 455282598}
   m_Script: {fileID: 11500000, guid: a559c474d10e8cf4390b8eaaf211589e, type: 3}
---- !u!114 &455282601 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114730024977203892, guid: 16b138a781b434b478c86c9600358e80,
-    type: 2}
-  m_PrefabInternal: {fileID: 455282598}
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 --- !u!1001 &1028159171
 Prefab:
   m_ObjectHideFlags: 0

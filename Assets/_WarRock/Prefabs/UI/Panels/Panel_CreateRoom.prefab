@@ -97,7 +97,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1179872186600076
 GameObject:
   m_ObjectHideFlags: 1
@@ -1860,7 +1860,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 16
+  m_Text: 2
 --- !u!114 &114749432963868110
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1952,13 +1952,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a559c474d10e8cf4390b8eaaf211589e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelType: 2
+  panelType: 4
   isOverlay: 1
   m_PrivateToggle: {fileID: 114566275801101002}
   m_BackButton: {fileID: 114697552220264540}
   m_OkButton: {fileID: 114226304354097624}
   m_CancelButton: {fileID: 114466572455560360}
   m_SlotSlider: {fileID: 114950196322987938}
+  m_SlotText: {fileID: 114730024977203892}
   m_RoomNameInputFd: {fileID: 114509353396680444}
 --- !u!114 &114920094330658890
 MonoBehaviour:
@@ -2045,7 +2046,18 @@ MonoBehaviour:
   m_Value: 2
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 114730024977203892}
+        m_MethodName: set_lineSpacing
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Slider+SliderEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &114988367393995532
@@ -2360,7 +2372,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2444,7 +2456,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: -2.2400017, y: 0}
   m_SizeDelta: {x: 25.882, y: 4.786}
   m_Pivot: {x: 0.5, y: 0.5}

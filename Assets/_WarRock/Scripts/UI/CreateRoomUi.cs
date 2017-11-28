@@ -10,6 +10,7 @@ public class CreateRoomUi : UiPanel
     [SerializeField] private Button m_OkButton;
     [SerializeField] private Button m_CancelButton;
     [SerializeField] private Slider m_SlotSlider;
+    [SerializeField] private Text m_SlotText;
     [SerializeField] private InputField m_RoomNameInputFd;
 
     // Default Data
@@ -41,6 +42,7 @@ public class CreateRoomUi : UiPanel
 
     private void UpdatePlayerSlots(float amountOfSlots) {
         m_PlayerSlots = Mathf.RoundToInt(amountOfSlots);
+        m_SlotText.text = m_PlayerSlots.ToString();
     }
 
     private void UpdateRoomPrivacy(bool isPrivate) {

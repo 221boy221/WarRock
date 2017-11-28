@@ -48,6 +48,7 @@ public class NetworkManager : Photon.PunBehaviour
             IsOpen = !isPrivate,
             IsVisible = !isInvisible
         };
+
         // Create a room using the custom Room Options
         PhotonNetwork.CreateRoom(roomName, roomOptions, TypedLobby.Default);
     }
