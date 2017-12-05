@@ -28,13 +28,8 @@ public class WaitingRoom : UiPanel
         m_LeaveButton.onClick.AddListener(OnClickedExit);
 
         // Update UI
-        CleanUpList();
-        SetClientUI();
-        UpdateUI();
-
-        if (PhotonNetwork.room != null) {
-            m_RoomIdLabel.text = PhotonNetwork.room.CustomProperties[RoomProperties.ID].ToString();
-        }
+        SetClientState();
+        UpdateUserList();
     }
     private void OnDisable() {
         // Event Listeners
@@ -55,7 +50,7 @@ public class WaitingRoom : UiPanel
     /// <summary>
     /// Changes the Ready button into a Start button if to the player is a master and the other way around.
     /// </summary>
-    private void SetClientUI()
+    private void SetClientState()
     {
         if (PhotonNetwork.player.IsMasterClient)
         {
@@ -67,6 +62,8 @@ public class WaitingRoom : UiPanel
             m_StartButton.gameObject.SetActive(false);
             m_ReadyButton.gameObject.SetActive(true);
         }
+
+        m_RoomIdLabel.text = PhotonNetwork.room.CustomProperties[RoomProperties.ID].ToString();
     }
 
     /// <summary>
@@ -87,7 +84,7 @@ public class WaitingRoom : UiPanel
     /// </summary>
     private void OnClickedStart()
     {
-        if (PhotonNetwork.room.PlayerCount > RoomProperties.MIN_SLOTS)
+        if (PhotonNetwork.room.PlayerCount >= RoomProperties.MIN_SLOTS)
         {
             // Min slot count reached
             if (AllPlayersReady())
@@ -111,7 +108,7 @@ public class WaitingRoom : UiPanel
     private void StartGame() {
         Debug.Log("Starting game...");
 
-        // Loading level, reset player ready states so we can use them to check if player is done loading
+        // Loading level, set player loading state so we can check when player is done loading
         foreach (PhotonPlayer player in PhotonNetwork.playerList)
         {
             Hashtable newProperties = new Hashtable();
@@ -119,10 +116,11 @@ public class WaitingRoom : UiPanel
             player.SetCustomProperties(newProperties);
         }
 
-        PhotonNetwork.LoadLevel((int)PhotonNetwork.room.CustomProperties[RoomProperties.MAP_ID]); // Todo: replace with list of different maps (scenes) and consts
+        PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties[RoomProperties.MAP_ID].ToString());
     }
 
-    private bool AllPlayersReady() {
+    private bool AllPlayersReady() 
+    {
         foreach (PhotonPlayer player in PhotonNetwork.playerList)
         {
             // If player is host, skip
@@ -137,9 +135,9 @@ public class WaitingRoom : UiPanel
     }
 
     /// <summary>
-    /// Updates the UI listing, it creates the necessary items not yet listed, update existing items and remove unused entries
+    /// Updates the UI listing, it creates the necessary slots not yet listed, update existing items and remove unused entries
     /// </summary>
-    public void UpdateUI()
+    public void UpdateUserList()
     {
         List<int> processedIDs = new List<int>();
 
@@ -223,24 +221,24 @@ public class WaitingRoom : UiPanel
     public void OnPhotonPlayerConnected(PhotonPlayer player)
     {
         Debug.Log("Player [#" + player.ID + "] " + player.NickName + "' connected.");
-        UpdateUI();
+        UpdateUserList();
     }
 
     public void OnPhotonPlayerDisconnected(PhotonPlayer player)
     {
         Debug.Log("Player [#" + player.ID + "] " + player.NickName + "' disconnected.");
-        UpdateUI();
+        UpdateUserList();
     }
 
     public void OnMasterClientSwitched()
     {
-        UpdateUI();
-        SetClientUI();
+        UpdateUserList();
+        SetClientState();
     }
 
     public void OnPhotonPlayerPropertiesChanged()
     {
-        UpdateUI();
+        UpdateUserList();
     }
     #endregion
 }

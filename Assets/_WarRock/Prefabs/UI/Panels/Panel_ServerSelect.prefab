@@ -354,7 +354,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Welcome to WarRock!
+  m_Text: Welcome !
 --- !u!114 &114749454004544198
 MonoBehaviour:
   m_ObjectHideFlags: 1

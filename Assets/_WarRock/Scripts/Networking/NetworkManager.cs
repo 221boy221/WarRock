@@ -184,8 +184,8 @@ public class NetworkManager : Photon.PunBehaviour
             exclusionList.Add((int)roomInfo.CustomProperties[RoomProperties.ID]);
         }
 
+        // if i is not in excl list
         int id = Enumerable.Range(0, 1000).Where(i => !exclusionList.Contains(i)).ElementAt(0);
-        Debug.Log("Generated room Id: " + id);
         return id;
     }
 

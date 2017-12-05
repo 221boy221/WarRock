@@ -853,7 +853,11 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
+<<<<<<< HEAD
   m_Text: 99999
+=======
+  m_Text: '-'
+>>>>>>> Improved UI Prefabs
 --- !u!114 &114798458582203494
 MonoBehaviour:
   m_ObjectHideFlags: 1
