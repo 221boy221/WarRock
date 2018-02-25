@@ -242,7 +242,9 @@ public class NetworkManager : Photon.PunBehaviour
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined room");
-        
+
+        // Enable once joined game scene
+        PhotonNetwork.isMessageQueueRunning = true;
     }
 
     public override void OnLeftRoom()

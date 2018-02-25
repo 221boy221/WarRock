@@ -52,7 +52,9 @@ public class CreateRoomUi : UiPanel
     /// <summary>
     /// Opens the UI panel MainMenu.
     /// </summary>
-    private void OnClickedCancel() { OpenUIPanel(UIPanelTypes.RoomListMenu); }
+    private void OnClickedCancel() {
+        OpenUIPanel(UIPanelTypes.RoomListMenu);
+    }
 
     /// <summary>
     /// Calls the NetworkManager.CreateRoom() with either RoomType.Public or RoomType.Private

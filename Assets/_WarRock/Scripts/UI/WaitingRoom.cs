@@ -116,6 +116,8 @@ public class WaitingRoom : UiPanel
             player.SetCustomProperties(newProperties);
         }
 
+        // Remove player from message queue
+        PhotonNetwork.isMessageQueueRunning = false;
         PhotonNetwork.LoadLevel(PhotonNetwork.room.CustomProperties[RoomProperties.MAP_ID].ToString());
     }
 

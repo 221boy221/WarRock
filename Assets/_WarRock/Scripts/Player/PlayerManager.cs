@@ -33,7 +33,7 @@ public class PlayerManager : MonoBehaviour {
         }
 
 
-        // Todo, get values from mysql
+        // Todo, get lvl values etc from mysql
 
         ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable
         {

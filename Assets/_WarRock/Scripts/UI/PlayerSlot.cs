@@ -79,8 +79,7 @@ public class PlayerSlot : MonoBehaviour
         {
             _readyState.text = "";
         }
-
-        // Todo : fix null error!
+        
         Debug.Log("Lvl: " + player.CustomProperties[PlayerProperties.LVL]);
         byte  lvl = (byte)player.CustomProperties[PlayerProperties.LVL];
         _imgComp.sprite = PlayerManager.Instance.GetImgForLvl(lvl);
