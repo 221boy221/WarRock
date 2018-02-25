@@ -7,5 +7,6 @@
     InventoryMenu,
     CreateRoomPanel,
     SettingsPanel,
-    QuitPanel
+    QuitPanel,
+    Shop
 }

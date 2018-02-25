@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class RoomListUi : UiPanel
@@ -64,7 +65,8 @@ public class RoomListUi : UiPanel
     }
 
     private void OnClickedExit() {
-        // Todo: Add logout
+        PhotonNetwork.Disconnect();
+        SceneManager.LoadScene("Login");
     }
 
     /// <summary>

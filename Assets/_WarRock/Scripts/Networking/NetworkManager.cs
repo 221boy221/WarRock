@@ -28,10 +28,11 @@ public class NetworkManager : Photon.PunBehaviour
     /// </summary>
     internal void CreateRoom(string roomName, bool isPrivate, int roomSlots, bool isInvisible)
     {
+        int generatedId = GenerateRoomId();
         // Create and set Room Options
         RoomOptions roomOptions = new RoomOptions() {
             CustomRoomProperties = new Hashtable {
-                { RoomProperties.ID, GenerateRoomId() },
+                { RoomProperties.ID, generatedId },
                 { RoomProperties.ROOM_TYPE, isPrivate },
                 { RoomProperties.GAME_MODE, 0 },
                 { RoomProperties.MAP_ID, 0 }
@@ -63,6 +64,7 @@ public class NetworkManager : Photon.PunBehaviour
         // Find room that matches given id
         foreach (RoomInfo roomInfo in PhotonNetwork.GetRoomList())
         {
+            Debug.Log("looping through room.. " + (int)roomInfo.CustomProperties[RoomProperties.ID]);
             if ((int)roomInfo.CustomProperties[RoomProperties.ID] == roomId)
             {
                 Debug.Log("Found room with ID [" + roomId + "]...");
@@ -70,10 +72,12 @@ public class NetworkManager : Photon.PunBehaviour
                 {
                     room = roomInfo;
                     Debug.Log("Room is public, joining!");
+                    break;
                 }
                 else
                 {
                     Debug.Log("Cannot join room. Room is private!");
+                    break;
                 }
             }
         }
@@ -178,14 +182,18 @@ public class NetworkManager : Photon.PunBehaviour
     {
         HashSet<int> exclusionList = new HashSet<int>() { };
         RoomInfo[] roomList = PhotonNetwork.GetRoomList();
+        Debug.Log("RoomList size: " + roomList.Length);
+        Debug.Log("insideLobby: " + PhotonNetwork.insideLobby);
 
-        foreach (RoomInfo roomInfo in roomList)
-        {
+        foreach (RoomInfo roomInfo in roomList) {
+            Debug.LogError("GenerateRoomId RoomInfo id to exclude: " + roomInfo.CustomProperties[RoomProperties.ID]);
             exclusionList.Add((int)roomInfo.CustomProperties[RoomProperties.ID]);
         }
 
         // if i is not in excl list
         int id = Enumerable.Range(0, 1000).Where(i => !exclusionList.Contains(i)).ElementAt(0);
+
+        Debug.LogError("Generated Room ID': " + id);
         return id;
     }
 
@@ -194,9 +202,13 @@ public class NetworkManager : Photon.PunBehaviour
     /// </summary>
     public void LeaveRoom()
     {
+        Debug.Log("Leaving room");
+        Debug.Log("inRoom: " + PhotonNetwork.inRoom);
+
         if (PhotonNetwork.inRoom)
         {
-            PhotonNetwork.LeaveRoom();
+            bool leaveRoom = PhotonNetwork.LeaveRoom();
+            Debug.Log("LeaveRoom: " + leaveRoom);
         }
     }
 

@@ -43,6 +43,7 @@ public class WaitingRoom : UiPanel
     /// </summary>
     private void OnClickedExit() {
         PhotonNetwork.LeaveRoom();
+        PhotonNetwork.JoinLobby();
         OpenUIPanel(UIPanelTypes.RoomListMenu);
     }
 
@@ -154,8 +155,6 @@ public class WaitingRoom : UiPanel
 
                 // Add ID to processed IDs list
                 processedIDs.Add(player.ID);
-
-                Debug.Log("Player " + player.NickName + " already has a playerslot, updating existing slot...");
             }
             // Create new slot
             else

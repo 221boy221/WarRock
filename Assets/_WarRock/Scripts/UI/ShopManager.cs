@@ -1,10 +1,8 @@
 ﻿using GameSparks.Api.Requests;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ShopManager : MonoBehaviour {
+public class ShopManager : UiPanel {
 
 	
     public void BuyVirtualGoodsRequest(string itemId, Action<bool> callbackRes, Action<string> callbackErr) {
