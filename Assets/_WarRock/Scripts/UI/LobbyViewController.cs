@@ -3,23 +3,41 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LobbyManager : MonoBehaviour
-{
+public class LobbyViewController : Singleton<LobbyViewController> {
 
     #region Vars
     [SerializeField] private UiPanel[] _LobbyPanels;
     [SerializeField] private ServerList m_ServerList;
-    [SerializeField] private LoginPanel m_LoginPanel;
+    [SerializeField] private LoginPopupComponent m_LoginPanel;
     [SerializeField] private Text m_UserId;
     [SerializeField] private Text m_ConnectionStatus;
     #endregion
 
     #region Methods
 
+    private void Awake() {
+        LoginManager.Instance.AccountAuthenticatedEvent += OnAccountAuthenticatedEvent;
+        LoginManager.Instance.AccountRegisteredEvent += OnAccountRegisteredEvent;
+    }
+
+    private void OnAccountRegisteredEvent(RegistrationResponse obj) {
+        SetNickName(obj.DisplayName);
+        SetConnectionStatus("New User Registered...");
+    }
+
+    private void OnAccountAuthenticatedEvent(AuthenticationResponse obj) {
+        SetNickName(obj.DisplayName);
+        SetConnectionStatus("User Authenticated!");
+    }
+
+    private void OnDestroy() {
+        LoginManager.Instance.AccountAuthenticatedEvent -= OnAccountAuthenticatedEvent;
+        LoginManager.Instance.AccountRegisteredEvent -= OnAccountRegisteredEvent;
+    }
+
     void Start() {
-        
-        m_UserId.text = "No User Logged In...";
-        m_ConnectionStatus.text = "No Connection...";
+        SetConnectionStatus("No Connection...");
+        SetNickName("");
 
         //GS.GameSparksAvailable += (isAvailable) => {
         //    if (isAvailable) {
@@ -31,11 +49,18 @@ public class LobbyManager : MonoBehaviour
         //};
     }
 
+    internal void SetConnectionStatus(string status) {
+        m_ConnectionStatus.text = status;
+    }
+
+    internal void SetNickName(string nickname) {
+        m_UserId.text = nickname;
+    }
+
     private void OnEnable() {
         // Add Eventlisteners
         for (int i = 0; i < _LobbyPanels.Length; i++)
             _LobbyPanels[i].OpenUIPanelEvent += SwitchPanelTo;
-        m_LoginPanel.SignIn += OnSignIn;
 
         // Check if the Player is already connected to a Room.
         if (!PhotonNetwork.inRoom) SwitchPanelTo(UIPanelTypes.RoomListMenu);
@@ -46,7 +71,6 @@ public class LobbyManager : MonoBehaviour
         // Remove Eventlisteners
         for (int i = 0; i < _LobbyPanels.Length; i++)
             _LobbyPanels[i].OpenUIPanelEvent -= SwitchPanelTo;
-        m_LoginPanel.SignIn -= OnSignIn;
     }
 
     
@@ -65,7 +89,7 @@ public class LobbyManager : MonoBehaviour
                 break;
             }
         }
-
+        if (panel == null) return;
         if (!panel.isOverlay) {
             for (int i = 0; i < _LobbyPanels.Length; i++) {
                 if (_LobbyPanels[i].panelType != panelType && _LobbyPanels[i].panelType != UIPanelTypes.None) {
@@ -90,46 +114,9 @@ public class LobbyManager : MonoBehaviour
     public void OnJoinedRoom() {
         SwitchPanelTo(UIPanelTypes.WaitingRoomMenu);
     }
-
-    private void RegisterUser(string _user, string _pass) {
-        GameSparksManager.Instance().RegisterUser(
-            m_LoginPanel.Username,
-            m_LoginPanel.Password,
-            OnRegistration
-        );
-    }
-
-    private void OnSignIn(string _user, string _pass) {
-        GameSparksManager.Instance().AuthenticateUser(
-            m_LoginPanel.Username, 
-            m_LoginPanel.Password, 
-            OnAuthentication
-        );
-    }
+    
     #endregion
     
-    #region Callbacks
-    /// <summary>
-    /// this is called when a player is registered
-    /// </summary>
-    /// <param name="_resp">Resp.</param>
-    private void OnRegistration(RegistrationResponse _resp) {
-        m_UserId.text = "User ID: " + _resp.UserId;
-        m_ConnectionStatus.text = "New User Registered...";
-    }
-    /// <summary>
-    /// This is called when a player is authenticated
-    /// </summary>
-    /// <param name="_resp">Resp.</param>
-    private void OnAuthentication(AuthenticationResponse _resp) {
-        m_UserId.text = "User ID: " + _resp.UserId;
-        m_ConnectionStatus.text = "User Authenticated...";
-
-        PhotonNetwork.player.NickName = m_LoginPanel.Username;
-        m_LoginPanel.gameObject.SetActive(false);
-        m_ServerList.gameObject.SetActive(true);
-    }
-    #endregion
     #endregion
 
 }
