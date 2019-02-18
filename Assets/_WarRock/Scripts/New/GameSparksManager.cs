@@ -4,23 +4,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameSparksManager : MonoBehaviour {
+public class GameSparksManager : Singleton<GameSparksManager> {
 
-    private static GameSparksManager instance = null;
-    public static GameSparksManager Instance() {
-        if (instance != null) {
-            return instance;
-        }
-        else {
-            Debug.LogError("GSM| GameSparksManager Not Initialized...");
-        }
-        return null;
-    }
+    
 
     void Awake() {
-        instance = this;
-        DontDestroyOnLoad(this.gameObject);
+
     }
+
+
 
     private void OnPacketReceived(RTPacket _packet) {
 

@@ -33,6 +33,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
                             GameObject singleton = new GameObject("(singleton) " + typeof(T).ToString());
 
                             instance = singleton.AddComponent<T>();
+                            if (!applicationIsQuitting) DontDestroyOnLoad(singleton);
                         }
                         
                         // Use existing
@@ -79,9 +80,6 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
     public void OnApplicationQuit() {
         applicationIsQuitting = true;
     }
-
-    public virtual void Awake() {
-        DontDestroyOnLoad(Instance.gameObject);
-    }
+    
     
 }
