@@ -8,11 +8,11 @@ public class LoginManager : Singleton<LoginManager> {
     internal Action<AuthenticationResponse> AccountAuthenticatedEvent;
 
     internal void SignIn(string user, string pass) {
-        GameSparksManager.Instance().AuthenticateUser(user, pass, OnAuthentication);
+        GameSparksManager.Instance.AuthenticateUser(user, pass, OnAuthentication);
     }
 
     internal void RegisterUser(string user, string pass) {
-        GameSparksManager.Instance().RegisterUser(user, pass, OnRegistration);
+        GameSparksManager.Instance.RegisterUser(user, pass, OnRegistration);
     }
 
     #region Callbacks

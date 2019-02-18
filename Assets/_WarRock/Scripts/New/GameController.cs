@@ -1,13 +1,10 @@
 ﻿using GameSparks.RT;
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameController : MonoBehaviour {
-
-    private static GameController instance;
-    public static GameController Instance() {
-        return instance;
-    }
+public class GameController : Singleton<GameController> {
 
     private Player[] playerList;
     public GameObject[] playerPrefabs;
@@ -15,14 +12,37 @@ public class GameController : MonoBehaviour {
     // Todo: make dynamic (non-inspector)
     public Text[] playerKillsHUDList, playerNamesHUDList;
 
-    void Awake() {
-        instance = this;
-    }
+    private SpawnPoint[] spawnPoints;
+
 
     private void Start() {
-        SpawnPoint[] allSpawnpoints = FindObjectsOfType(typeof(SpawnPoint)) as SpawnPoint[];
+        StartCoroutine(SendTimeStamp());
+        LoadSpawnPoints();
+        SetupPlayers();
+    }
 
+    
+    /// <summary>
+    /// Sends a Unix timestamp in milliseconds to the server
+    /// </summary>
+    private IEnumerator SendTimeStamp() {
+        using (RTData data = RTData.Get()) {
+            // Current time as timestamp
+            data.SetLong(1, (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).TotalMilliseconds);
+            // Send data with OpCode 101 to peerId 0, aka the server
+            //GameSparksManager.Instance.GetRTSession().SendData(101, GameSparks.RT.GameSparksRT.DeliveryIntent.UNRELIABLE, data, new int[] { 0 });
+        }
 
+        // Sync every X sec
+        yield return new WaitForSeconds(5f);
+        StartCoroutine(SendTimeStamp());
+    }
+
+    private void LoadSpawnPoints() {
+        spawnPoints = FindObjectsOfType(typeof(SpawnPoint)) as SpawnPoint[];
+    }
+
+    private void SetupPlayers() {
         //#region Setup Players
         //playerList = new Player[(int)GameSparksManager.Instance().GetSessionInfo().GetPlayerList().Count];
 
@@ -49,7 +69,7 @@ public class GameController : MonoBehaviour {
         //        }
         //    }
         //}
-        
+
         //// lastly, go through the list of HUD elements, starting with the number of players and clear any HUD for players that aren't in the session //
         //for (int i = GameSparksManager.Instance().GetSessionInfo().GetPlayerList().Count; i < playerKillsHUDList.Length; i++) {
         //    playerKillsHUDList[i].text = playerNamesHUDList[i].text = string.Empty;
@@ -57,9 +77,6 @@ public class GameController : MonoBehaviour {
         //#endregion
     }
 
-    public Player[] GetAllPlayers() {
-        return playerList;
-    }
 
 
     /// <summary>
@@ -67,7 +84,7 @@ public class GameController : MonoBehaviour {
     /// </summary>
     /// <param name="_packet">Packet Received From Opponent Player</param>
     public void UpdateOpponentPlayers(RTPacket _packet) {
-
+        //
     }
 
     /// <summary>
@@ -77,7 +94,7 @@ public class GameController : MonoBehaviour {
     /// </summary>
     /// <param name="_packet">Packet Received From Opponent Player</param>
     public void RegisterOpponentHit(RTPacket _packet) {
-
+        //
     }
 
     /// <summary>
@@ -86,5 +103,10 @@ public class GameController : MonoBehaviour {
     /// <param name="_peerId">Peer Id of the player who disconnected</param>
     public void OnOpponentDisconnected(int _peerId) {
         Debug.Log("User with peerId " + _peerId + " has left the RT session.");
+    }
+
+
+    public Player[] GetAllPlayers() {
+        return playerList;
     }
 }
